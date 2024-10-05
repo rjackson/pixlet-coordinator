@@ -1,0 +1,3 @@
+[submodule "packages/tidbyt-community"]
+	path = packages/tidbyt-community
+	url = https://github.com/tidbyt/community
