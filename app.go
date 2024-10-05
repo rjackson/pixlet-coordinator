@@ -17,9 +17,17 @@ type App struct {
 	path    string
 	config  map[string]string
 	timeout int
+
+	_images []image.Image // Built images
+	_delay  int32
 }
 
-func (a *App) Render(c *rgbmatrix.Canvas) {
+func (a *App) Ready() bool {
+	return len(a._images) > 0
+}
+
+// Prebuild images for display, so we're not compiling during a display render cycle
+func (a *App) Build() {
 	ctx, _ := context.WithTimeoutCause(
 		context.Background(),
 		time.Duration(a.timeout)*time.Millisecond,
@@ -30,17 +38,18 @@ func (a *App) Render(c *rgbmatrix.Canvas) {
 	applet, _ := runtime.NewAppletFromFS("app-id", fs)
 	roots, _ := applet.RunWithConfig(ctx, a.config)
 
-	images := render.PaintRoots(true, roots...)
+	a._images = render.PaintRoots(true, roots...)
 
 	var delay int32 = 50
 	if len(roots) > 0 && roots[0].Delay > 0 {
 		delay = roots[0].Delay
 	}
+	a._delay = delay
+}
 
-	fmt.Println("delay", delay)
-
-	for _, im := range images {
-		frameDuration := time.Duration(delay) * time.Millisecond
+func (a *App) RenderToDisplay(c *rgbmatrix.Canvas) {
+	for _, im := range a._images {
+		frameDuration := time.Duration(a._delay) * time.Millisecond
 		draw.Draw(c, c.Bounds(), im, image.Point{}, draw.Src)
 		c.Render()
 		time.Sleep(frameDuration)
