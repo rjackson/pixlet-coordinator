@@ -109,7 +109,7 @@ func isJulienEmulator() bool {
 
 func buildJulienMatrix(config *HardwareConfig) Matrix {
 	w, h := config.geometry()
-	matrix := julien.GenerateEmpty(h, w)
+	matrix := julien.GenerateEmpty(w, h)
 	return &matrix
 }
 

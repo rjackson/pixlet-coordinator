@@ -148,13 +148,13 @@ func (c *RGBLedMatrix) Render() error {
 
 // At return a Color which allows access to the LED display data as
 // if it were a sequence of 24-bit RGB values.
-func (c *RGBLedMatrix) At(position int) color.Color {
-	return uint32ToColor(c.leds[position])
+func (c *RGBLedMatrix) At(x, y int) color.Color {
+	return uint32ToColor(c.leds[c.position(x, y)])
 }
 
 // Set LED at position x,y to the provided 24-bit color value.
-func (c *RGBLedMatrix) Set(position int, color color.Color) {
-	c.leds[position] = uint32_t(colorToUint32(color))
+func (c *RGBLedMatrix) Set(x, y int, color color.Color) {
+	c.leds[c.position(x, y)] = uint32_t(colorToUint32(color))
 }
 
 // Close finalizes the ws281x interface
@@ -176,8 +176,13 @@ func (c *RGBLedMatrix) SetBrightness(brightness int) {
 // Apply set all the pixels to the values contained in leds
 func (c *RGBLedMatrix) Apply(leds []color.Color) error {
 	for position, l := range leds {
-		c.Set(position, l)
+		x, y = position%c.w, position/c.w
+		c.Set(x, y, l)
 	}
 
 	return c.Render()
+}
+
+func (c *RGBLedMatrix) position(x, y int) int {
+	return x + (y * c.w)
 }

@@ -16,8 +16,9 @@ package julien
 
 import (
 	"fmt"
-	"github.com/aybabtme/rgbterm"
 	"image/color"
+
+	"github.com/aybabtme/rgbterm"
 )
 
 type point struct {
@@ -39,17 +40,15 @@ func (e Row) Size() int {
 }
 
 // String converts the row into space-and-dot notation.
-func (e Row) String() string {
-	out := "|"
-
+func (e Row) String() (out string) {
 	for _, elem := range e {
 		if elem.Set {
-			out += rgbterm.FgString("*", elem.Color.R, elem.Color.G, elem.Color.B)
+			out += rgbterm.FgString("██", elem.Color.R, elem.Color.G, elem.Color.B)
 		} else {
-			out += " "
+			out += "██"
 		}
 	}
-	out += "|\n"
+	out += "\n"
 	return out
 }
 
@@ -58,38 +57,29 @@ type Matrix struct {
 	Matrix []Row
 }
 
-// Size returns the dimensions of the matrix in (Rows, Columns) order.
+// Size returns the dimensions of the matrix in (Width, Height) order.
 func (e Matrix) Size() (int, int) {
 	if len(e.Matrix) == 0 {
 		return 0, 0
 	} else {
-		return len(e.Matrix), e.Matrix[0].Size()
+		return e.Matrix[0].Size(), len(e.Matrix)
 	}
 }
 
 // String converts the matrix to space-and-dot notation.
 func (e Matrix) String() string {
 	out := []rune{}
-	_, b := e.Size()
+	out = append(out, []rune("\033[H")...)
 
-	addBar := func() {
-		for i := -2; i < b; i++ {
-			out = append(out, '-')
-		}
-		out = append(out, '\n')
-	}
-
-	addBar()
 	for _, row := range e.Matrix {
 		out = append(out, []rune(row.String())...)
 	}
-	addBar()
 
 	return string(out)
 }
 
 // GenerateEmpty generates the n-by-n matrix with all entries set to 0.
-func GenerateEmpty(height, width int) Matrix {
+func GenerateEmpty(width, height int) Matrix {
 	out := make([]Row, height)
 
 	for i := 0; i < height; i++ {
@@ -103,16 +93,14 @@ func (e *Matrix) Geometry() (width, height int) {
 	return e.Size()
 }
 
-func (e *Matrix) position(x, y int) int {
-	return x + (y * len(e.Matrix))
-}
-
-func (t *Matrix) Apply(leds []color.Color) error {
+func (e *Matrix) Apply(leds []color.Color) error {
+	w, h := e.Size()
 	for position, l := range leds {
-		t.Set(position, l)
+		y, x := position/h, position%w
+		e.Set(x, y, l)
 	}
 
-	return t.Render()
+	return e.Render()
 }
 
 func (e *Matrix) Render() error {
@@ -122,22 +110,19 @@ func (e *Matrix) Render() error {
 	return nil
 }
 
-func (e *Matrix) At(position int) color.Color {
-	h, w := e.Size()
-	posY := position / h
-	posX := position % w
-
-	return e.Matrix[posY][posX].Color
+func (e *Matrix) At(x, y int) color.Color {
+	return e.Matrix[y][x].Color
 }
 
-func (e *Matrix) Set(position int, c color.Color) {
-	h, w := e.Size()
-	posY := position / h
-	posX := position % w
+func (e *Matrix) Set(x, y int, c color.Color) {
+	// Out of bounds. Just happens apparently and we have to handle it
+	if y >= len(e.Matrix) || x >= len(e.Matrix[0]) {
+		return
+	}
 
 	r, g, b, a := c.RGBA()
 	cc := color.RGBA{R: uint8(r), G: uint8(g), B: uint8(b), A: uint8(a)}
-	e.Matrix[posY][posX] = point{Set: true, Color: cc}
+	e.Matrix[y][x] = point{Set: true, Color: cc}
 }
 
 // Those new functions have no use with the emulator
