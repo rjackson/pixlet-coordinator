@@ -1,3 +1,6 @@
 [submodule "packages/tidbyt-community"]
 	path = packages/tidbyt-community
 	url = https://github.com/tidbyt/community
+[submodule "lib/rpi-rgb-led-matrix"]
+	path = lib/rpi-rgb-led-matrix
+	url = git@github.com:hzeller/rpi-rgb-led-matrix.git

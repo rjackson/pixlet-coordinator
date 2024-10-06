@@ -1,0 +1,3 @@
+This package contains certain MIT licensed code from [jmaitrehenry/go-rpi-rgb-led-matrix](https://github.com/jmaitrehenry/go-rpi-rgb-led-matrix), to make it easier to extend on for this project without having to maintain a fork of my own.
+
+Relevant files have had copyright header notices added with the owners of the relevant forks since the original project at [mcuadros/go-rpi-rgb-led-matrix](https://github.com/mcuadros/go-rpi-rgb-led-matrix).

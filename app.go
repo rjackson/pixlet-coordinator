@@ -7,7 +7,8 @@ import (
 	"image/draw"
 	"time"
 
-	rgbmatrix "github.com/jmaitrehenry/go-rpi-rgb-led-matrix"
+	"pixlet-coordinator/lib/rgbmatrix"
+
 	"tidbyt.dev/pixlet/render"
 	"tidbyt.dev/pixlet/runtime"
 	"tidbyt.dev/pixlet/tools"

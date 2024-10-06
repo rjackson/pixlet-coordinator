@@ -1,9 +1,8 @@
 package main
 
 import (
+	"pixlet-coordinator/lib/rgbmatrix"
 	"time"
-
-	rgbmatrix "github.com/jmaitrehenry/go-rpi-rgb-led-matrix"
 )
 
 var apps = []App{
