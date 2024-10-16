@@ -48,11 +48,18 @@ func (a *App) Build() {
 	a._delay = delay
 }
 
-func (a *App) RenderToDisplay(c *rgbmatrix.Canvas) {
+func (a *App) RenderToDisplay(c *rgbmatrix.Canvas, interrupt <-chan bool) {
 	for _, im := range a._images {
-		frameDuration := time.Duration(a._delay) * time.Millisecond
-		draw.Draw(c, c.Bounds(), im, image.Point{}, draw.Src)
-		c.Render()
-		time.Sleep(frameDuration)
+		select {
+		// Stop rendering if we receive an interrupt
+		case <-interrupt:
+			return
+
+		default:
+			frameDuration := time.Duration(a._delay) * time.Millisecond
+			draw.Draw(c, c.Bounds(), im, image.Point{}, draw.Src)
+			c.Render()
+			time.Sleep(frameDuration)
+		}
 	}
 }
