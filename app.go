@@ -15,6 +15,7 @@ import (
 )
 
 type App struct {
+	title   string
 	path    string
 	config  map[string]string
 	timeout int
