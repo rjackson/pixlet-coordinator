@@ -20,9 +20,9 @@ copies or substantial portions of the Software.
 package rgbmatrix
 
 /*
-#cgo CFLAGS: -std=c99 -I${SRCDIR}/lib/rpi-rgb-led-matrix/include -DSHOW_REFRESH_RATE
-#cgo LDFLAGS: -lrgbmatrix -L${SRCDIR}/lib/rpi-rgb-led-matrix/lib -lstdc++ -lm
-#include "lib/rpi-rgb-led-matrix/include/led-matrix-c.h"
+#cgo CFLAGS: -std=c99 -I${SRCDIR}/../rpi-rgb-led-matrix/include -DSHOW_REFRESH_RATE
+#cgo LDFLAGS: -lrgbmatrix -L${SRCDIR}/../rpi-rgb-led-matrix/lib -lstdc++ -lm
+#include "../rpi-rgb-led-matrix/include/led-matrix-c.h"
 
 void led_matrix_swap(struct RGBLedMatrix *matrix, struct LedCanvas *offscreen_canvas,
                      int width, int height, const uint32_t pixels[]) {
@@ -176,7 +176,7 @@ func (c *RGBLedMatrix) SetBrightness(brightness int) {
 // Apply set all the pixels to the values contained in leds
 func (c *RGBLedMatrix) Apply(leds []color.Color) error {
 	for position, l := range leds {
-		x, y = position%c.w, position/c.w
+		x, y := position%c.width, position/c.width
 		c.Set(x, y, l)
 	}
 
@@ -184,5 +184,5 @@ func (c *RGBLedMatrix) Apply(leds []color.Color) error {
 }
 
 func (c *RGBLedMatrix) position(x, y int) int {
-	return x + (y * c.w)
+	return x + (y * c.width)
 }
